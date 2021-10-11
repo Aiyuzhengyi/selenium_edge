@@ -2,7 +2,7 @@ from selenium import webdriver
 import xlwt
 import os
 import requests
-
+333
 
 # 1.【selenium模块】遥控win10自带的Edge浏览器打开指定网页；
 # 2.查看页面共19页，撇去数字“0”，开始循环点击网页；
