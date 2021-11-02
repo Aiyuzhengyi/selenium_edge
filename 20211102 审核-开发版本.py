@@ -118,9 +118,9 @@ def xls(info):
 
 if __name__ == '__main__':
     info = []
-    url = "http://"
+    url = "http://网站地址"
     drivers = namedtuple('drivers', 'account key count rank')
-    list_driver = [drivers()]
+    list_driver = [drivers(账号。)]
     t1 = threading.Thread(target=process_account, args=(list_driver[0],), name='Thread-A11014')
     t2 = threading.Thread(target=process_account, args=(list_driver[1],), name='Thread-B11014')
     t1.start()
