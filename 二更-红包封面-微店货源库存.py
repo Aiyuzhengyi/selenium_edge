@@ -1,17 +1,17 @@
 import os
 import re
 import time
-
 import requests
 import xlrd
 import xlwt
 from selenium import webdriver
 
-
-# 1.【selenium模块】遥控win10自带的Edge浏览器打开指定网页；
-# 2.查看页面共19页，撇去数字“0”，开始循环点击网页；
-# 3.每次点击一个网页页码，则使用【css选择器】定位指定【字段】 并提取出来存入变量 school_info；
-# 4.【xlwt模块】写入数据
+# 1.【selenium模块】遥控win10自带的Edge浏览器打开指定网页（输入账号密码，根据逻辑进行操作）。
+# 2.特点：无论网站有多少页，获取网页中总计多少条，利用正则表达式提取int型数字并取整，即翻页次数。处理如下：（num = re.findall('\d+', text)和 nub_new = int(num[0]) // 100。
+# 3.特点：无论单个网页有多少数量，通过获取指定范围所有的tr标签。 for循环每个tr标签内，利用xpath索取tr标签内相应字段。（这里注意，存在一种情况：selenium提取不了标签文本。如果提取的元素文本为空，这是可能就是定位的
+#     元素被隐藏了，即需要判断是否被隐藏。怎么解决？通过textContent, innerText, innerHTML等属性获取。我选择的是innerHTML。）函数完成后retur 列表，后续待用。
+# 4.【xlwt模块】写入info数据,利用time模块依据当天日期存储指定路径。
+# 5.为方便获取网站上所有的图片，还写了两个函数：读取素材 和 下载图片 。（注意的是，由于path中有'/'，需要清除以防保存报错。
 def parselweb(url, info):
     driver = webdriver.Edge(executable_path='msedgedriver.exe')
     driver.get(url)
@@ -46,6 +46,9 @@ def parselweb(url, info):
     driver.find_element_by_css_selector(
         'body > div.el-select-dropdown.el-popper > div.el-scrollbar > div.el-select-dropdown__wrap.el-scrollbar__wrap > ul > li:nth-child(5)').click()
     time.sleep(4)
+    # 以上为驱动浏览器打开相应的网址，输入账号密码登陆。
+
+    # 翻页次数设定。
     text = driver.find_element_by_css_selector(
         '#weidianHelp > div > div.card > div.fx-seller-item-table > div.el-pagination > span.el-pagination__total').text
     num = re.findall('\d+', text)
@@ -53,8 +56,8 @@ def parselweb(url, info):
     nub_new1 = nub_new + 1
 
     # 实现循环
-    # driver.find_element_by_css_selector(".ant-pagination-item.ant-pagination-item-" + str(i)).click()
     for i in range(nub_new1):
+        # 局部变量单次循环后清空操作
         href_text = []
         img_text = []
         name_text = []
@@ -63,17 +66,19 @@ def parselweb(url, info):
         stock_text = []
         trs = driver.find_elements_by_xpath(
             '//*[@id="weidianHelp"]/div/div[3]/div[2]/div[1]/div[4]/div[2]/table/tbody/tr')
-
         for tr in trs:
             # 商品链接
             href = tr.find_element_by_xpath('td[2]/div/div/a').get_attribute('href')
             href_text.append(href)
+
             # 商品图片
             img = tr.find_element_by_xpath('td[2]/div/div/a/img').get_attribute('src')
             img_text.append(img)
+
             # 商品标题
             name = tr.find_element_by_xpath('td[2]/div/div/div[2]/p[1]').get_attribute('innerHTML')
             name_text.append(name)
+
             # 供销商定价
             price = tr.find_element_by_xpath('td[3]/div/p[1]').get_attribute('innerHTML')
             price_text.append(price)
@@ -99,7 +104,7 @@ def parselweb(url, info):
     print("接下来将数据传入Excel")
     return info
 
-
+#写入excel。
 def xlsbook(info):
     a = time.strftime("%Y-%m-%d %X", time.localtime())
     xls = xlwt.Workbook()
@@ -141,7 +146,7 @@ def xls_duqu(info_duqu_xls):
     return info_duqu_xls
 
 
-# 下载logo模块
+# 下载图片模块
 def download(info_duqu_xls):
     root = "D://微店商品图片2021//"
     for key, val in enumerate(info_duqu_xls):
@@ -169,7 +174,7 @@ if __name__ == '__main__':
     info = []
     info_duqu_xls = []
     url = "https://d.weidian.com/weidian-pc/weidian-loader/#/pc-vue-fx-fx-item-manage/list"
-    # 派取数据存入excel
+    # 爬取数据存入excel
     parselweb(url, info)
     xlsbook(info)
 
