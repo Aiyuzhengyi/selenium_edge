@@ -17,10 +17,10 @@ def parselweb(url, info):
     driver.get(url)
     phone = driver.find_element_by_css_selector(
         '#app > div.content-wrapper > div > div > div.flex.login-container-content > div.login-wrapper > div.logo-info > form > div.user-telephone > div > div > div > input')
-    phone.send_keys('18662214242')
+    phone.send_keys('1******')
     key = driver.find_element_by_css_selector(
         '#app > div.content-wrapper > div > div > div.flex.login-container-content > div.login-wrapper > div.logo-info > form > div:nth-child(2) > div > div > input')
-    key.send_keys('qwql0528')
+    key.send_keys('key')
     submit = driver.find_element_by_css_selector(
         '#app > div.content-wrapper > div > div > div.flex.login-container-content > div.login-wrapper > div.logo-info > form > div:nth-child(4) > div > button')
     submit.click()
