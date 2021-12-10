@@ -29,10 +29,10 @@ def parselweb(url, info):
     print(driver.get_cookies())
     # phone = driver.find_element_by_css_selector(
     #     '#app > div.content-wrapper > div > div > div.flex.login-container-content > div.login-wrapper > div.logo-info > form > div.user-telephone > div > div > div > input')
-    # phone.send_keys('18662214242')
+    # phone.send_keys('account')
     # key = driver.find_element_by_css_selector(
     #     '#app > div.content-wrapper > div > div > div.flex.login-container-content > div.login-wrapper > div.logo-info > form > div:nth-child(2) > div > div > input')
-    # key.send_keys('qwql0528')
+    # key.send_keys('password')
     # submit = driver.find_element_by_css_selector(
     #     '#app > div.content-wrapper > div > div > div.flex.login-container-content > div.login-wrapper > div.logo-info > form > div:nth-child(4) > div > button')
     # submit.click()
