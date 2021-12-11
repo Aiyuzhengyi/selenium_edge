@@ -17,38 +17,22 @@ def parselweb(url, info):
     driver.get(url)
     phone = driver.find_element_by_css_selector(
         '#app > div.content-wrapper > div > div > div.flex.login-container-content > div.login-wrapper > div.logo-info > form > div.user-telephone > div > div > div > input')
-    phone.send_keys('1******')
+    phone.send_keys('18662214242')
     key = driver.find_element_by_css_selector(
         '#app > div.content-wrapper > div > div > div.flex.login-container-content > div.login-wrapper > div.logo-info > form > div:nth-child(2) > div > div > input')
-    key.send_keys('key')
+    key.send_keys('qwql0528')
     submit = driver.find_element_by_css_selector(
         '#app > div.content-wrapper > div > div > div.flex.login-container-content > div.login-wrapper > div.logo-info > form > div:nth-child(4) > div > button')
     submit.click()
     time.sleep(3)
-    shop_choose = driver.find_element_by_css_selector('#app > div.content-wrapper > div > div > div.bottom > div.item')
-    shop_choose.click()
-    time.sleep(3)
-    driver.refresh()
-    time.sleep(3)
-    fenxiao = driver.find_element_by_css_selector(
-        '#weidianMenu > div.v-common-menu-list > div.v-common-menu > div:nth-child(8) > div > a > div.v-common-menu-name')
-    fenxiao.click()
-    time.sleep(3)
+    driver.get(url)
+    # 以上为驱动浏览器打开相应的网址，输入对应账号密码登陆后获取cookies保存到本地excel，实测发现无论商家后台还是买家端都可以共享cookies。如果cookies失效，调用该段函数即可按照当日日期保存。
 
-    fenxiaoshang = driver.find_element_by_css_selector(
-        '#v-common-second-nav-wrapper > div:nth-child(1) > div.v-common-three-nav-wrapper > div:nth-child(7) > div')
-    fenxiaoshang.click()
-    time.sleep(4)
-
-    driver.find_element_by_css_selector(
-        '#weidianHelp > div > div.card > div.fx-seller-item-table > div.el-pagination > span.el-pagination__sizes > div > div.el-input.el-input--mini.el-input--suffix > input').click()
+    # 单页设定100条每页+翻页次数设定。
+    driver.find_element_by_xpath('//*[@id="weidianHelp"]/div/div[3]/div[2]/div[2]/span[2]/div/div/input').click()
     time.sleep(3)
-    driver.find_element_by_css_selector(
-        'body > div.el-select-dropdown.el-popper > div.el-scrollbar > div.el-select-dropdown__wrap.el-scrollbar__wrap > ul > li:nth-child(5)').click()
-    time.sleep(4)
-    # 以上为驱动浏览器打开相应的网址，输入账号密码登陆。
-
-    # 翻页次数设定。
+    driver.find_element_by_xpath('/html/body/div[4]/div[1]/div[1]/ul/li[5]').click()
+    time.sleep(3)
     text = driver.find_element_by_css_selector(
         '#weidianHelp > div > div.card > div.fx-seller-item-table > div.el-pagination > span.el-pagination__total').text
     num = re.findall('\d+', text)

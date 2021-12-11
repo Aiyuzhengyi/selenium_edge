@@ -11,64 +11,85 @@ from selenium import webdriver
 driver.add_cookie({"name": "test1", "value": "cookie1"}) 和 print(driver.get_cookies())。
 Python中一切皆为对象，既然生成了一个driver，也可以作为参数传给其他函数调用哦。
 
-2021年12月10日16:27:28
-
+日期：2021年12月10日16:27:28
+作者:爱与正义
+用途：微店当天库存获取，导出excel。
 '''
+
+
 # 1.【selenium模块】遥控win10自带的Edge浏览器打开指定网页（输入账号密码，根据逻辑进行操作）。
 # 2.特点：无论网站有多少页，获取网页中总计多少条，利用正则表达式提取int型数字并取整，即翻页次数。处理如下：（num = re.findall('\d+', text)和 nub_new = int(num[0]) // 100。
 # 3.特点：无论单个网页有多少数量，通过获取指定范围所有的tr标签。 for循环每个tr标签内，利用xpath索取tr标签内相应字段。（这里注意，存在一种情况：selenium提取不了标签文本。如果提取的元素文本为空，这是可能就是定位的
 #     元素被隐藏了，即需要判断是否被隐藏。怎么解决？通过textContent, innerText, innerHTML等属性获取。我选择的是innerHTML。）函数完成后retur 列表，后续待用。
 # 4.【xlwt模块】写入info数据,利用time模块依据当天日期存储指定路径。
 # 5.为方便获取网站上所有的图片，还写了两个函数：读取素材 和 下载图片 。（注意的是，由于path中有'/'，需要清除以防保存报错。
-def parselweb(url, info):
+
+def get_system_cookies():
+    driver = webdriver.Edge(executable_path='msedgedriver.exe')
+    cookies_List = []
+    driver.get(url)
+    phone = driver.find_element_by_css_selector(
+        '#app > div.content-wrapper > div > div > div.flex.login-container-content > div.login-wrapper > div.logo-info > form > div.user-telephone > div > div > div > input')
+    phone.send_keys('18662214242')
+    key = driver.find_element_by_css_selector(
+        '#app > div.content-wrapper > div > div > div.flex.login-container-content > div.login-wrapper > div.logo-info > form > div:nth-child(2) > div > div > input')
+    key.send_keys('qwql0528')
+    submit = driver.find_element_by_css_selector(
+        '#app > div.content-wrapper > div > div > div.flex.login-container-content > div.login-wrapper > div.logo-info > form > div:nth-child(4) > div > button')
+    submit.click()
+    time.sleep(3)
+    # Get all available cookies
+    cookies_List = driver.get_cookies()
+    xls = xlwt.Workbook()
+    sheet = xls.add_sheet("weidian_cookies_update")
+    sheet.write(0, 0, "cookies")
+    sheet.write(1, 0, str(cookies_List))
+    xls.save("d:/微店登录cookies.xls")
+    driver.quit()
+
+
+def parselweb():
     driver = webdriver.Edge(executable_path='msedgedriver.exe')
     driver.get(url)
     # Adds the cookie into current browser context
-    driver.add_cookie({'domain': '.weidian.com', 'expiry': 1641797519, 'httpOnly': False, 'name': 'uid', 'path': '/', 'secure': False, 'value': '1457321685'})
-    driver.add_cookie( {'domain': '.weidian.com', 'expiry': 1639207319, 'httpOnly': False, 'name': '__spider__sessionid', 'path': '/', 'secure': False, 'value': 'b29cdef87f632110'})
-    driver.add_cookie({'domain': '.weidian.com', 'expiry': 1641797519, 'httpOnly': False, 'name': 'duid', 'path': '/', 'secure': False, 'value': '1457321685'})
-    driver.add_cookie({'domain': '.weidian.com', 'expiry': 1702277519, 'httpOnly': False, 'name': '__spider__visitorid', 'path': '/', 'secure': False, 'value': '70e2778e3e76e112'})
-    driver.add_cookie({'domain': '.weidian.com', 'expiry': 1641797519, 'httpOnly': False, 'name': 'login_type', 'path': '/', 'secure': False, 'value': 'LOGIN_USER_TYPE_MASTER'})
-    driver.add_cookie({'domain': '.weidian.com', 'httpOnly': False, 'name': 'wdtoken', 'path': '/', 'secure': False, 'value': 'a61208d4'})
-    driver.add_cookie({'domain': '.weidian.com', 'expiry': 1641797519, 'httpOnly': True, 'name': 'login_token', 'path': '/', 'secure': False, 'value': '_EwWqqVIQYY7gjzkfFa6O3A5kekItHThOaivQoLJr8rl_Xy_w8QF42rj6QNnLNXxZLq4PHkiS14DbwI4zQ4iz_VYS7aJ7VCri6cekSyvxl5EjVNvJHNpVhoLSX6HUnWZvR-zu9iCTe_s0xCwBpZ7nHoSq2loLS0ZEnsaExKsxoa-aKVaTh_I'})
-    driver.add_cookie({'domain': '.weidian.com', 'expiry': 1641797519, 'httpOnly': False, 'name': 'login_source', 'path': '/', 'secure': False, 'value': 'LOGIN_USER_SOURCE_MASTER'})
-    driver.add_cookie({'domain': '.weidian.com', 'expiry': 1641797519, 'httpOnly': False, 'name': 'is_login', 'path': '/', 'secure': False, 'value': 'true'})
-    driver.add_cookie({'domain': '.weidian.com', 'expiry': 1641797519, 'httpOnly': False, 'name': 'sid', 'path': '/', 'secure': False, 'value': '1766652488'})
-
+    xls_read = xlrd.open_workbook_xls("d:/微店登录cookies.xls")
+    xls_sheet = xls_read.sheet_by_name("weidian_cookies_update")
+    cookies_List = xls_sheet.cell(1, 0).value
+    cookies_json1 = eval(cookies_List)
+    for i in cookies_json1:
+        driver.add_cookie(i)
     driver.get(url)
-    # Get all available cookies
-    print(driver.get_cookies())
-
-    driver.refresh()
     time.sleep(3)
-    fenxiao = driver.find_element_by_css_selector(
-        '#weidianMenu > div.v-common-menu-list > div.v-common-menu > div:nth-child(8) > div > a > div.v-common-menu-name')
-    fenxiao.click()
-    time.sleep(3)
+    print(cookies_json1)
+    if driver.current_url == url:
+        print("cookies 登录成功！")
+    else:
+        get_system_cookies()
+        xls_read = xlrd.open_workbook_xls("d:/微店登录cookies.xls")
+        xls_sheet = xls_read.sheet_by_name("weidian_cookies_update")
+        cookies_List = xls_sheet.cell(1, 0).value
+        cookies_json1 = eval(cookies_List)
+        for i in cookies_json1:
+            driver.add_cookie(i)
+        driver.get(url)
+        time.sleep(3)
+        print(cookies_json1)
 
-    fenxiaoshang = driver.find_element_by_css_selector(
-        '#v-common-second-nav-wrapper > div:nth-child(1) > div.v-common-three-nav-wrapper > div:nth-child(7) > div')
-    fenxiaoshang.click()
+    # 以上为驱动浏览器打开相应的网址，输入对应账号密码登陆后获取cookies保存到本地excel，实测发现无论商家后台还是买家端都可以共享cookies。如果cookies失效，调用该段函数即可按照当日日期保存。
+
+    # 单页设定100条每页+翻页次数设定。
+    driver.find_element_by_xpath('//*[@id="weidianHelp"]/div/div[3]/div[2]/div[2]/span[2]/div/div/input').click()
+    time.sleep(3)
+    driver.find_element_by_xpath('/html/body/div[4]/div[1]/div[1]/ul/li[5]').click()
     time.sleep(4)
-
-    driver.find_element_by_css_selector(
-        '#weidianHelp > div > div.card > div.fx-seller-item-table > div.el-pagination > span.el-pagination__sizes > div > div.el-input.el-input--mini.el-input--suffix > input').click()
-    time.sleep(3)
-    driver.find_element_by_css_selector(
-        'body > div.el-select-dropdown.el-popper > div.el-scrollbar > div.el-select-dropdown__wrap.el-scrollbar__wrap > ul > li:nth-child(5)').click()
-    time.sleep(4)
-    # 以上为驱动浏览器打开相应的网址，输入账号密码登陆。
-
-    # 翻页次数设定。
     text = driver.find_element_by_css_selector(
         '#weidianHelp > div > div.card > div.fx-seller-item-table > div.el-pagination > span.el-pagination__total').text
-    num = re.findall('\d+', text)
-    nub_new = int(num[0]) // 100
-    nub_new1 = nub_new + 1
-
+    text_num = re.findall('\d+', text)
+    text_num_int = int(text_num[0]) // 100
+    text_num_int_fanye = text_num_int + 1
 
     # 实现循环
-    for i in range(nub_new1):
+    for i in range(text_num_int_fanye):
         # 局部变量单次循环后清空操作
         href_text = []
         img_text = []
@@ -116,9 +137,9 @@ def parselweb(url, info):
     print("接下来将数据传入Excel")
     return info
 
-#写入excel。
+
+# 写入excel。
 def xlsbook(info):
-    a = time.strftime("%Y-%m-%d %X", time.localtime())
     xls = xlwt.Workbook()
     sheet = xls.add_sheet("当日库存情况")
     sheet.write(0, 0, "序号")
@@ -140,7 +161,7 @@ def xlsbook(info):
     xls.save("d:/微店商品库存详细-" + a[0:4] + '年' + a[5:7] + '月' + a[8:10] + '日-总' + str(len(info)) + "个.xls")
 
 
-# 读取素材
+# 读取素材--下载图片
 def xls_duqu(info_duqu_xls):
     xls_read = xlrd.open_workbook(r"D:\微店商品\微店商品库存详细-2021年12月09日-总762个.xls")
     xls_sheet = xls_read.sheet_by_name("当日库存情况")
@@ -158,7 +179,7 @@ def xls_duqu(info_duqu_xls):
     return info_duqu_xls
 
 
-# 下载图片模块
+# 下载图片函数
 def download(info_duqu_xls):
     root = "D://微店商品图片2021//"
     for key, val in enumerate(info_duqu_xls):
@@ -185,10 +206,13 @@ def download(info_duqu_xls):
 if __name__ == '__main__':
     info = []
     info_duqu_xls = []
+    a = time.strftime("%Y-%m-%d %X", time.localtime())
     url = "https://d.weidian.com/weidian-pc/weidian-loader/#/pc-vue-fx-fx-item-manage/list"
     url1 = 'https://weidian.com/item.html?itemID=1942454952799849067235'
+
+    # get_system_cookies(driver)
     # 爬取数据存入excel
-    parselweb(url, info)
+    parselweb()
     xlsbook(info)
 
     # 读取下载好的xls
