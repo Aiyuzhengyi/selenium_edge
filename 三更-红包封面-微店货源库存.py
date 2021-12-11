@@ -24,22 +24,21 @@ def parselweb(url, info):
     driver = webdriver.Edge(executable_path='msedgedriver.exe')
     driver.get(url)
     # Adds the cookie into current browser context
-    driver.add_cookie({'domain': '.weidian.com', 'expiry': 1639124025, 'httpOnly': False, 'name': '__spider__sessionid', 'path': '/', 'secure': False, 'value': 'bba3b36efe593732'})
+    driver.add_cookie({'domain': '.weidian.com', 'expiry': 1641797519, 'httpOnly': False, 'name': 'uid', 'path': '/', 'secure': False, 'value': '1457321685'})
+    driver.add_cookie( {'domain': '.weidian.com', 'expiry': 1639207319, 'httpOnly': False, 'name': '__spider__sessionid', 'path': '/', 'secure': False, 'value': 'b29cdef87f632110'})
+    driver.add_cookie({'domain': '.weidian.com', 'expiry': 1641797519, 'httpOnly': False, 'name': 'duid', 'path': '/', 'secure': False, 'value': '1457321685'})
+    driver.add_cookie({'domain': '.weidian.com', 'expiry': 1702277519, 'httpOnly': False, 'name': '__spider__visitorid', 'path': '/', 'secure': False, 'value': '70e2778e3e76e112'})
+    driver.add_cookie({'domain': '.weidian.com', 'expiry': 1641797519, 'httpOnly': False, 'name': 'login_type', 'path': '/', 'secure': False, 'value': 'LOGIN_USER_TYPE_MASTER'})
+    driver.add_cookie({'domain': '.weidian.com', 'httpOnly': False, 'name': 'wdtoken', 'path': '/', 'secure': False, 'value': 'a61208d4'})
+    driver.add_cookie({'domain': '.weidian.com', 'expiry': 1641797519, 'httpOnly': True, 'name': 'login_token', 'path': '/', 'secure': False, 'value': '_EwWqqVIQYY7gjzkfFa6O3A5kekItHThOaivQoLJr8rl_Xy_w8QF42rj6QNnLNXxZLq4PHkiS14DbwI4zQ4iz_VYS7aJ7VCri6cekSyvxl5EjVNvJHNpVhoLSX6HUnWZvR-zu9iCTe_s0xCwBpZ7nHoSq2loLS0ZEnsaExKsxoa-aKVaTh_I'})
+    driver.add_cookie({'domain': '.weidian.com', 'expiry': 1641797519, 'httpOnly': False, 'name': 'login_source', 'path': '/', 'secure': False, 'value': 'LOGIN_USER_SOURCE_MASTER'})
+    driver.add_cookie({'domain': '.weidian.com', 'expiry': 1641797519, 'httpOnly': False, 'name': 'is_login', 'path': '/', 'secure': False, 'value': 'true'})
+    driver.add_cookie({'domain': '.weidian.com', 'expiry': 1641797519, 'httpOnly': False, 'name': 'sid', 'path': '/', 'secure': False, 'value': '1766652488'})
+
+    driver.get(url)
     # Get all available cookies
     print(driver.get_cookies())
-    # phone = driver.find_element_by_css_selector(
-    #     '#app > div.content-wrapper > div > div > div.flex.login-container-content > div.login-wrapper > div.logo-info > form > div.user-telephone > div > div > div > input')
-    # phone.send_keys('account')
-    # key = driver.find_element_by_css_selector(
-    #     '#app > div.content-wrapper > div > div > div.flex.login-container-content > div.login-wrapper > div.logo-info > form > div:nth-child(2) > div > div > input')
-    # key.send_keys('password')
-    # submit = driver.find_element_by_css_selector(
-    #     '#app > div.content-wrapper > div > div > div.flex.login-container-content > div.login-wrapper > div.logo-info > form > div:nth-child(4) > div > button')
-    # submit.click()
-    # time.sleep(3)
-    # shop_choose = driver.find_element_by_css_selector('#app > div.content-wrapper > div > div > div.bottom > div.item')
-    # shop_choose.click()
-    # time.sleep(3)
+
     driver.refresh()
     time.sleep(3)
     fenxiao = driver.find_element_by_css_selector(
