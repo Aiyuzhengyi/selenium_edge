@@ -26,7 +26,6 @@ Python中一切皆为对象，既然生成了一个driver，也可以作为参�
 
 def get_system_cookies():
     driver = webdriver.Edge(executable_path='msedgedriver.exe')
-    cookies_List = []
     driver.get(url)
     phone = driver.find_element_by_css_selector(
         '#app > div.content-wrapper > div > div > div.flex.login-container-content > div.login-wrapper > div.logo-info > form > div.user-telephone > div > div > div > input')
@@ -44,38 +43,33 @@ def get_system_cookies():
     sheet = xls.add_sheet("weidian_cookies_update")
     sheet.write(0, 0, "cookies")
     sheet.write(1, 0, str(cookies_List))
-    xls.save("d:/微店登录cookies.xls")
+    xls.save("d:/weidian-quwei/微店登录cookies.xls")
     driver.quit()
 
 
 def parselweb():
     driver = webdriver.Edge(executable_path='msedgedriver.exe')
     driver.get(url)
-    # Adds the cookie into current browser context
-    xls_read = xlrd.open_workbook_xls("d:/微店登录cookies.xls")
-    xls_sheet = xls_read.sheet_by_name("weidian_cookies_update")
-    cookies_List = xls_sheet.cell(1, 0).value
-    cookies_json1 = eval(cookies_List)
-    for i in cookies_json1:
-        driver.add_cookie(i)
-    driver.get(url)
-    time.sleep(3)
-    print(cookies_json1)
-    if driver.current_url == url:
-        print("cookies 登录成功！")
-    else:
-        get_system_cookies()
-        xls_read = xlrd.open_workbook_xls("d:/微店登录cookies.xls")
+    def cookies_login():
+        # Adds the cookie into current browser context
+        xls_read = xlrd.open_workbook_xls("d:/weidian-quwei/微店登录cookies.xls")
         xls_sheet = xls_read.sheet_by_name("weidian_cookies_update")
         cookies_List = xls_sheet.cell(1, 0).value
         cookies_json1 = eval(cookies_List)
         for i in cookies_json1:
             driver.add_cookie(i)
         driver.get(url)
-        time.sleep(3)
         print(cookies_json1)
+        time.sleep(3)
+    cookies_login()
 
-    # 以上为驱动浏览器打开相应的网址，输入对应账号密码登陆后获取cookies保存到本地excel，实测发现无论商家后台还是买家端都可以共享cookies。如果cookies失效，调用该段函数即可按照当日日期保存。
+    if driver.current_url == url:
+        print("恭喜维斯布鲁克-利用cookies 登录成功！")
+    else:
+        get_system_cookies()
+        cookies_login()
+        print("注意：维斯布鲁克-已更新cookies 再次尝试cookies登录成功！")
+    # 以上为驱动浏览器打开相应的网址，输入对应账号密码登陆后获取cookies保存到本地excel，实测发现无论商家后台还是买家端都可以共享cookies。如果cookies失效，调用该段函数更新cookies。
 
     # 单页设定100条每页+翻页次数设定。
     driver.find_element_by_xpath('//*[@id="weidianHelp"]/div/div[3]/div[2]/div[2]/span[2]/div/div/input').click()
@@ -137,9 +131,8 @@ def parselweb():
     print("接下来将数据传入Excel")
     return info
 
-
 # 写入excel。
-def xlsbook(info):
+def xlsbook():
     xls = xlwt.Workbook()
     sheet = xls.add_sheet("当日库存情况")
     sheet.write(0, 0, "序号")
@@ -149,7 +142,6 @@ def xlsbook(info):
     sheet.write(0, 4, "利润")
     sheet.write(0, 5, "库存")
     sheet.write(0, 6, "图片网址")
-
     for key, val in enumerate(info):
         sheet.write(key + 1, 0, "第" + str(key + 1) + "个")
         sheet.write(key + 1, 1, val.get("lianjie"))
@@ -158,12 +150,14 @@ def xlsbook(info):
         sheet.write(key + 1, 4, val.get('lirun'))
         sheet.write(key + 1, 5, val.get('kucun'))
         sheet.write(key + 1, 6, val.get('tupian'))
-    xls.save("d:/微店商品库存详细-" + a[0:4] + '年' + a[5:7] + '月' + a[8:10] + '日-总' + str(len(info)) + "个.xls")
+    xls.save("d:/weidian-quwei/微店商品库存详细-" + a[0:4] + '年' + a[5:7] + '月' + a[8:10] + '日-总' + str(len(info)) + "个.xls")
+    time.sleep(3)
+    xls.save(r"D:\weidian-quwei\微店商品库存详细.xls")
 
-
+# PART-TWO
 # 读取素材--下载图片
-def xls_duqu(info_duqu_xls):
-    xls_read = xlrd.open_workbook(r"D:\微店商品\微店商品库存详细-2021年12月09日-总762个.xls")
+def xls_duqu():
+    xls_read = xlrd.open_workbook(r"D:\weidian-quwei\微店商品库存详细.xls")
     xls_sheet = xls_read.sheet_by_name("当日库存情况")
     nrows = xls_sheet.nrows
     ncols = xls_sheet.ncols
@@ -172,7 +166,7 @@ def xls_duqu(info_duqu_xls):
     # 依次读取指定文件内容
     for r in range(1, nrows):
         middle = {}
-        for c, key in zip(range(ncols), ["xuhao", "biaoti", "tupian"]):
+        for c, key in zip(range(ncols), ["xuhao", "lianjie", "biaoti", 'jiage', 'llirun', 'kucun', 'ziyuan']):
             x = xls_sheet.cell(r, c).value
             middle[key] = x
         info_duqu_xls.append(middle)
@@ -180,8 +174,8 @@ def xls_duqu(info_duqu_xls):
 
 
 # 下载图片函数
-def download(info_duqu_xls):
-    root = "D://微店商品图片2021//"
+def download():
+    root = "D://微店商品图片2021//weidian-quwei//"
     for key, val in enumerate(info_duqu_xls):
         photo_dir = val.get("tupian")
         photo_biaoti = val.get("biaoti")
@@ -203,6 +197,16 @@ def download(info_duqu_xls):
             print('爬取失败')
 
 
+def look_kucun():
+    parselweb()
+    xlsbook()
+
+
+def tupian_download():
+    xls_duqu()
+    download()
+
+
 if __name__ == '__main__':
     info = []
     info_duqu_xls = []
@@ -210,11 +214,9 @@ if __name__ == '__main__':
     url = "https://d.weidian.com/weidian-pc/weidian-loader/#/pc-vue-fx-fx-item-manage/list"
     url1 = 'https://weidian.com/item.html?itemID=1942454952799849067235'
 
-    # get_system_cookies(driver)
+    # get_system_cookies()
     # 爬取数据存入excel
-    parselweb()
-    xlsbook(info)
+    look_kucun()
 
     # 读取下载好的xls
-    # xls_duqu(info_duqu_xls)
-    # download(info_duqu_xls)
+    # tupian_download()
