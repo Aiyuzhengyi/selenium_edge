@@ -5,7 +5,7 @@ import requests
 import xlrd
 import xlwt
 from selenium import webdriver
-
+from selenium.webdriver.common.by import By
 '''三更主要特点：增加webdriver如何获取Cookie，已经利用Cookie登陆。
 这里使用到了官方文档：https://www.selenium.dev/zh-cn/documentation/webdriver/browser/cookies/中提到的添加Cookie和获取Cookies。
 driver.add_cookie({"name": "test1", "value": "cookie1"}) 和 print(driver.get_cookies())。
@@ -27,13 +27,13 @@ Python中一切皆为对象，既然生成了一个driver，也可以作为参�
 def get_system_cookies():
     driver = webdriver.Edge(executable_path='msedgedriver.exe')
     driver.get(url)
-    phone = driver.find_element_by_css_selector(
+    phone = driver.find_element(By.CSS_SELECTOR,
         '#app > div.content-wrapper > div > div > div.flex.login-container-content > div.login-wrapper > div.logo-info > form > div.user-telephone > div > div > div > input')
     phone.send_keys('18662214242')
-    key = driver.find_element_by_css_selector(
+    key = driver.find_element(By.CSS_SELECTOR,
         '#app > div.content-wrapper > div > div > div.flex.login-container-content > div.login-wrapper > div.logo-info > form > div:nth-child(2) > div > div > input')
     key.send_keys('qwql0528')
-    submit = driver.find_element_by_css_selector(
+    submit = driver.find_element(By.CSS_SELECTOR,
         '#app > div.content-wrapper > div > div > div.flex.login-container-content > div.login-wrapper > div.logo-info > form > div:nth-child(4) > div > button')
     submit.click()
     time.sleep(3)
@@ -72,11 +72,11 @@ def parselweb():
     # 以上为驱动浏览器打开相应的网址，输入对应账号密码登陆后获取cookies保存到本地excel，实测发现无论商家后台还是买家端都可以共享cookies。如果cookies失效，调用该段函数更新cookies。
 
     # 单页设定100条每页+翻页次数设定。
-    driver.find_element_by_xpath('//*[@id="weidianHelp"]/div/div[3]/div[2]/div[2]/span[2]/div/div/input').click()
+    driver.find_element(By.XPATH,'//*[@id="weidianHelp"]/div/div[3]/div[2]/div[2]/span[2]/div/div/input').click()
     time.sleep(3)
-    driver.find_element_by_xpath('/html/body/div[4]/div[1]/div[1]/ul/li[5]').click()
+    driver.find_element(By.XPATH,'/html/body/div[4]/div[1]/div[1]/ul/li[5]').click()
     time.sleep(4)
-    text = driver.find_element_by_css_selector(
+    text = driver.find_element(By.CSS_SELECTOR,
         '#weidianHelp > div > div.card > div.fx-seller-item-table > div.el-pagination > span.el-pagination__total').text
     text_num = re.findall('\d+', text)
     text_num_int = int(text_num[0]) // 100
@@ -91,7 +91,7 @@ def parselweb():
         price_text = []
         profit_text = []
         stock_text = []
-        trs = driver.find_elements_by_xpath(
+        trs = driver.find_elements(By.XPATH,
             '//*[@id="weidianHelp"]/div/div[3]/div[2]/div[1]/div[4]/div[2]/table/tbody/tr')
         for tr in trs:
             # 商品链接
@@ -126,7 +126,7 @@ def parselweb():
 
         # for next page
         driver.find_element_by_xpath('//*[@id="weidianHelp"]/div/div[3]/div[2]/div[2]/button[2]').click()
-        time.sleep(5)
+        time.sleep(3)
     print(info)
     print("接下来将数据传入Excel")
     return info
@@ -166,7 +166,7 @@ def xls_duqu():
     # 依次读取指定文件内容
     for r in range(1, nrows):
         middle = {}
-        for c, key in zip(range(ncols), ["xuhao", "lianjie", "biaoti", 'jiage', 'llirun', 'kucun', 'ziyuan']):
+        for c, key in zip(range(ncols), ["xuhao", "lianjie", "biaoti", 'jiage', 'lirun', 'kucun', 'ziyuan']):
             x = xls_sheet.cell(r, c).value
             middle[key] = x
         info_duqu_xls.append(middle)
@@ -175,9 +175,9 @@ def xls_duqu():
 
 # 下载图片函数
 def download():
-    root = "D://微店商品图片2021//weidian-quwei//"
+    root = "D:/weidian-quwei/微店商品图片2021/"
     for key, val in enumerate(info_duqu_xls):
-        photo_dir = val.get("tupian")
+        photo_dir = val.get("ziyuan")
         photo_biaoti = val.get("biaoti")
         path = root + photo_biaoti + '.jpg'
 
@@ -210,13 +210,18 @@ def tupian_download():
 if __name__ == '__main__':
     info = []
     info_duqu_xls = []
+    root = "D:/weidian-quwei/"
+    if not os.path.exists(root):
+        os.mkdir(root)
+    else:
+        print('提示：文件夹已存在')
     a = time.strftime("%Y-%m-%d %X", time.localtime())
     url = "https://d.weidian.com/weidian-pc/weidian-loader/#/pc-vue-fx-fx-item-manage/list"
     url1 = 'https://weidian.com/item.html?itemID=1942454952799849067235'
 
     # get_system_cookies()
     # 爬取数据存入excel
-    look_kucun()
+    # look_kucun()
 
     # 读取下载好的xls
     # tupian_download()
