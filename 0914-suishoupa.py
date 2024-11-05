@@ -7,8 +7,8 @@ import requests
 
 # 读取素材
 def xls_duqu_suishou(info_xls_sucai):
-    xls_read = xlrd.open_workbook(r"D:\随手拍-内容-图片.xls")
-    xls_sheet = xls_read.sheet_by_name("随手拍-明细")
+    xls_read = xlrd.open_workbook(r"D:\xxx.xls")
+    xls_sheet = xls_read.sheet_by_name("xxx-明细")
     nrows = xls_sheet.nrows
     ncols = xls_sheet.ncols
     # time.sleep(3)  等设置待时间
@@ -58,7 +58,7 @@ def main(info_xls_sucai):
         path = photo_dir_jpg[-1]
         driver.file_detector = LocalFileDetector()
         driver.find_element_by_css_selector(
-            "#SearchForm > div > div:nth-child(1) > div > div > div > div > input").send_keys("D://随后拍素材总//" + path)
+            "#SearchForm > div > div:nth-child(1) > div > div > div > div > input").send_keys("D://xxx//" + path)
 
         # 地址 address
         address_real = val.get("address")
@@ -81,8 +81,8 @@ def main(info_xls_sucai):
         # 地区 area
         driver.find_element_by_css_selector("#SearchForm > div > div:nth-child(5) > div > div:nth-child(8)").click()
         time.sleep(1)
-        driver.find_element_by_css_selector("#phone").send_keys("18662214242")
-        # driver.find_element_by_css_selector("#phone").send_keys("13024161893")
+        driver.find_element_by_css_selector("#phone").send_keys("xxxxxxx")
+        # driver.find_element_by_css_selector("#phone").send_keys("1xxxxx")
         driver.find_element_by_css_selector("#hqyzm").click()
         print("shuru yanzhema")
         time.sleep(1)
